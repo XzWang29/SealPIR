@@ -36,8 +36,12 @@ void PIRServer::set_database(unique_ptr<vector<Plaintext>> &&db) {
     is_db_preprocessed_ = false;
 }
 
+
+// TODO: need detailed description of the database
 void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes, 
     uint64_t ele_num, uint64_t ele_size) {
+
+    // TODO: do not understand this part, what do all these parameters mean?
 
     uint32_t logt = floor(log2(params_.plain_modulus().value()));
     uint32_t N = params_.poly_modulus_degree();

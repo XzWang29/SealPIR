@@ -32,6 +32,8 @@ vector<uint64_t> get_dimensions(uint64_t plaintext_num, uint32_t d) {
     return dimensions;
 }
 
+// TODO: do not understand this part
+// TODO: seems generating params for SEAL context
 void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
                 uint32_t d, EncryptionParameters &params,
                 PirParams &pir_params) {
@@ -50,7 +52,7 @@ void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
     vector<SmallModulus> coeff_mod_array;
     uint32_t logq = 0;
 
-    for (uint32_t i = 0; i < 1; i++) {
+    for (uint32_t i = 0; i < 1; i++) { // TODO: why? i<1??
         coeff_mod_array.emplace_back(SmallModulus());
         coeff_mod_array[i] = DefaultParams::small_mods_60bit(i);
         logq += coeff_mod_array[i].bit_count();
