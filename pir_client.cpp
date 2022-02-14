@@ -23,11 +23,9 @@ PIRClient::PIRClient(const EncryptionParameters &params,
 
 
 PirQuery PIRClient::generate_query(uint64_t desiredIndex) {
-
+    // TODO: get index of query in FV plaintext matrix
     indices_ = compute_indices(desiredIndex, pir_params_.nvec);
-
-    compute_inverse_scales(); 
-
+    compute_inverse_scales();
     vector<vector<Ciphertext> > result(pir_params_.d);
     int N = params_.poly_modulus_degree(); 
 
@@ -221,9 +219,10 @@ void PIRClient::compute_inverse_scales(){
     inverse_scales_.clear(); 
 
     for(int i = 0; i < pir_params_.nvec.size(); i++){
-        uint64_t index_modN = indices_[i] % N; 
-        uint64_t numCtxt = ceil ( (pir_params_.nvec[i] + 0.0) / N);  // number of query ciphertexts. 
-        uint64_t batchId = indices_[i] / N;  
+        uint64_t numCtxt = ceil ( (pir_params_.nvec[i] + 0.0) / N);  // number of query ciphertexts.
+        uint64_t batchId = indices_[i] / N;  // TODO: batchID should always be 0 in single query version
+
+        // TODO, Q: do not understand this line...
         if (batchId == numCtxt - 1) {
             cout << "Client: adjusting the logm value..." << endl; 
             logm = ceil(log2((pir_params_.nvec[i] % N)));
@@ -234,10 +233,13 @@ void PIRClient::compute_inverse_scales(){
 
         int quo = logm / logt; 
         int mod = logm % logt; 
-        inverse_scale = pow(2, logt - mod); 
+        inverse_scale = pow(2, logt - mod);
+
+        // TODO, Q: do not understand this part.....
         if ((quo +1) %2 != 0){
             inverse_scale =  params_.plain_modulus().value() - pow(2, logt - mod); 
         }
+
         inverse_scales_.push_back(inverse_scale); 
         if ( (inverse_scale << logm)  % t != 1){
             throw logic_error("something wrong"); 

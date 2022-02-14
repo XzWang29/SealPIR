@@ -1,0 +1,4 @@
+/Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR/cmake-build-debug/CMakeFiles/sealpir.dir
+/Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR/cmake-build-debug/CMakeFiles/main.dir

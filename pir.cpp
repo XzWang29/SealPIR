@@ -12,7 +12,7 @@ vector<uint64_t> get_dimensions(uint64_t plaintext_num, uint32_t d) {
     vector<uint64_t> dimensions(d);
 
     for (uint32_t i = 0; i < d; i++) {
-        dimensions[i] = std::max((uint32_t) 2, (uint32_t) floor(pow(plaintext_num, 1.0/d)));
+        dimensions[i] = std::max((uint32_t) 2, (uint32_t) floor(pow(plaintext_num, 1.0 / d)));
     }
 
     uint32_t product = 1;
@@ -20,7 +20,7 @@ vector<uint64_t> get_dimensions(uint64_t plaintext_num, uint32_t d) {
 
     // if plaintext_num is not a d-power
     if ((double) dimensions[0] != pow(plaintext_num, 1.0 / d)) {
-        while  (product < plaintext_num && j < d) {
+        while (product < plaintext_num && j < d) {
             product = 1;
             dimensions[j++]++;
             for (uint32_t i = 0; i < d; i++) {
@@ -32,16 +32,14 @@ vector<uint64_t> get_dimensions(uint64_t plaintext_num, uint32_t d) {
     return dimensions;
 }
 
-// TODO: do not understand this part
-// TODO: seems generating params for SEAL context
 void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
                 uint32_t d, EncryptionParameters &params,
                 PirParams &pir_params) {
-    
+
     // Determine the maximum size of each dimension
 
-    // plain modulus = a power of 2 plus 1
-    uint64_t plain_mod = (static_cast<uint64_t>(1) << logt) + 1;
+    // plain modulus = a power of 2 plus 1 // TODO: why??
+    uint64_t plain_mod = (static_cast<uint64_t>(1) << logt) + 1; // TODO：polynominal modulus of FV ??
     uint64_t plaintext_num = plaintexts_per_db(logt, N, ele_num, ele_size);
 
 #ifdef DEBUG
@@ -53,7 +51,7 @@ void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
     uint32_t logq = 0;
 
     for (uint32_t i = 0; i < 1; i++) { // TODO: why? i<1??
-        coeff_mod_array.emplace_back(SmallModulus());
+        coeff_mod_array.emplace_back(SmallModulus());  // TODO: what is this line doing ?
         coeff_mod_array[i] = DefaultParams::small_mods_60bit(i);
         logq += coeff_mod_array[i].bit_count();
     }
@@ -67,7 +65,7 @@ void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
     uint32_t expansion_ratio = 0;
     for (uint32_t i = 0; i < params.coeff_modulus().size(); ++i) {
         double logqi = log2(params.coeff_modulus()[i].value());
-        cout << "PIR: logqi = " << logqi << endl; 
+        cout << "PIR: logqi = " << logqi << endl;
         expansion_ratio += ceil(logqi / logt);
     }
 
@@ -79,8 +77,8 @@ void gen_params(uint64_t ele_num, uint64_t ele_size, uint32_t N, uint32_t logt,
 }
 
 
-uint32_t plainmod_after_expansion(uint32_t logt, uint32_t N, uint32_t d, 
-        uint64_t ele_num, uint64_t ele_size) {
+uint32_t plainmod_after_expansion(uint32_t logt, uint32_t N, uint32_t d,
+                                  uint64_t ele_num, uint64_t ele_size) {
 
     // Goal: find max logtp such that logtp + ceil(log(ceil(d_root(n)))) <= logt
     // where n = ceil(ele_num / floor(N*logtp / ele_size *8))
@@ -92,7 +90,7 @@ uint32_t plainmod_after_expansion(uint32_t logt, uint32_t N, uint32_t d,
             return logtp - 1;
         }
 
-        if ((double)logtp + ceil(log2(ceil(pow(n, 1.0/(double)d)))) <= logt) {
+        if ((double) logtp + ceil(log2(ceil(pow(n, 1.0 / (double) d)))) <= logt) {
             return logtp;
         }
     }
@@ -102,8 +100,10 @@ uint32_t plainmod_after_expansion(uint32_t logt, uint32_t N, uint32_t d,
 }
 
 // Number of coefficients needed to represent a database element
+// TODO: 一条数据库中的数据需要多少个FV-plaintext中的多项式系数来表示
+// TODO：FV-plaintext——多项式的系数
 uint64_t coefficients_per_element(uint32_t logtp, uint64_t ele_size) {
-    return ceil(8 * ele_size / (double)logtp);
+    return ceil(8 * ele_size / (double) logtp);
 }
 
 // Number of database elements that can fit in a single FV plaintext
@@ -117,7 +117,7 @@ uint64_t elements_per_ptxt(uint32_t logt, uint64_t N, uint64_t ele_size) {
 // Number of FV plaintexts needed to represent the database
 uint64_t plaintexts_per_db(uint32_t logtp, uint64_t N, uint64_t ele_num, uint64_t ele_size) {
     uint64_t ele_per_ptxt = elements_per_ptxt(logtp, N, ele_size);
-    return ceil((double)ele_num / ele_per_ptxt);
+    return ceil((double) ele_num / ele_per_ptxt);
 }
 
 vector<uint64_t> bytes_to_coeffs(uint32_t limit, const uint8_t *bytes, uint64_t size) {
@@ -184,6 +184,7 @@ void vector_to_plaintext(const vector<uint64_t> &coeffs, Plaintext &plain) {
     util::set_uint_uint(coeffs.data(), coeff_count, plain.data());
 }
 
+// TODO: 计算要查询的明文在plaintext encoding matrix中的哪个位置
 vector<uint64_t> compute_indices(uint64_t desiredIndex, vector<uint64_t> Nvec) {
     uint32_t num = Nvec.size();
     uint64_t product = 1;
@@ -227,9 +228,9 @@ PirQuery deserialize_query(uint32_t d, uint32_t count, string s, uint32_t len_ci
     vector<vector<Ciphertext>> c;
     for (uint32_t i = 0; i < d; i++) {
         c.push_back(deserialize_ciphertexts(
-              count, 
-              s.substr(i * count * len_ciphertext, count * len_ciphertext),
-              len_ciphertext)
+                count,
+                s.substr(i * count * len_ciphertext, count * len_ciphertext),
+                len_ciphertext)
         );
     }
     return c;
@@ -253,9 +254,9 @@ string serialize_ciphertexts(vector<Ciphertext> c) {
 string serialize_query(vector<vector<Ciphertext>> c) {
     string s;
     for (uint32_t i = 0; i < c.size(); i++) {
-      for (uint32_t j = 0; j < c[i].size(); j++) {
-        s.append(serialize_ciphertext(c[i][j]));
-      }
+        for (uint32_t j = 0; j < c[i].size(); j++) {
+            s.append(serialize_ciphertext(c[i][j]));
+        }
     }
     return s;
 }

@@ -1,0 +1,6 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja /Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR
+-- Microsoft SEAL -> Version 3.2.0 detected
+-- Microsoft SEAL -> Library build type: Static_PIC
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/wangxinzuo/work/projects/PAM-PSIPIR/PIR/SealPIR/cmake-build-debug

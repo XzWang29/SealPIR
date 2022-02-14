@@ -18,10 +18,10 @@ add_library(sealpir STATIC
   pir_server.cpp
 )
 
+option(DEBUG "help string describing option" True)
 find_package(SEAL 3.2.0 EXACT REQUIRED)
 if(SEAL_FOUND)
-  include_directories("/usr/local/include/seal/")
-  message(STATUS "SEAL_INCLUDE_DIRS= ${SEAL_INCLUDE_DIRS}")
+  include_directories("/usr/local/include/")
 else()
   message(STATUS "SEAL NOT Found !")
 endif(SEAL_FOUND)

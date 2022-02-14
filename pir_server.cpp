@@ -5,6 +5,7 @@ using namespace std;
 using namespace seal;
 using namespace seal::util;
 
+// TODO: setting up SEAL params and SEAL context
 PIRServer::PIRServer(const EncryptionParameters &params, const PirParams &pir_params) :
     params_(params), 
     pir_params_(pir_params),
@@ -41,8 +42,6 @@ void PIRServer::set_database(unique_ptr<vector<Plaintext>> &&db) {
 void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes, 
     uint64_t ele_num, uint64_t ele_size) {
 
-    // TODO: do not understand this part, what do all these parameters mean?
-
     uint32_t logt = floor(log2(params_.plain_modulus().value()));
     uint32_t N = params_.poly_modulus_degree();
 
@@ -51,8 +50,8 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
 
     // number of FV plaintexts needed to create the d-dimensional matrix
     uint64_t prod = 1;
-    for (uint32_t i = 0; i < pir_params_.nvec.size(); i++) {
-        prod *= pir_params_.nvec[i];
+    for (unsigned long long i : pir_params_.nvec) {
+        prod *= i;
     }
     uint64_t matrix_plaintexts = prod;
     assert(total <= matrix_plaintexts);
@@ -73,6 +72,7 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
 
     uint32_t offset = 0;
 
+    // TODO: how many plaintext are needed?
     for (uint64_t i = 0; i < total; i++) {
 
         uint64_t process_bytes = 0;
@@ -86,6 +86,7 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
         }
 
         // Get the coefficients of the elements that will be packed in plaintext i
+        // TODO: fill coeff i with input elems (bytes)
         vector<uint64_t> coefficients = bytes_to_coeffs(logt, bytes.get() + offset, process_bytes);
         offset += process_bytes;
 
@@ -99,8 +100,10 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
         }
 
         Plaintext plain;
-        vector_to_plaintext(coefficients, plain);
-        // cout << i << "-th encoded plaintext = " << plain.to_string() << endl; 
+        vector_to_plaintext(coefficients, plain); // TODO: this function simply copies coeff vector to Plaintext.data_
+#ifdef DEBUG
+        cout << i << "-th encoded plaintext = " << plain.to_string() << endl;
+#endif
         result->push_back(move(plain));
     }
 
@@ -115,6 +118,7 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
          << " elements)" << endl;
 #endif
 
+    // TODO: padding the plaintext matrix with 1
     vector<uint64_t> padding(N, 1);
 
     for (uint64_t i = 0; i < (matrix_plaintexts - current_plaintexts); i++) {

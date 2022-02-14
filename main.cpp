@@ -6,7 +6,6 @@
 #include <memory>
 #include <random>
 #include <cstdint>
-#include <cstddef>
 
 using namespace std::chrono;
 using namespace std;
@@ -15,7 +14,7 @@ using namespace seal;
 int main(int argc, char *argv[]) {
 
     uint64_t number_of_items = 1 << 12;
-    uint64_t size_per_item = 288; // in bytes
+    uint64_t size_per_item = 288; // in bytes  // TODO: what does this mean? // old value: 288
     uint32_t N = 2048;
 
     // Recommended values: (logt, d) = (12, 2) or (8, 1). 
@@ -38,10 +37,12 @@ int main(int argc, char *argv[]) {
     // the correct element.
     auto db_copy(make_unique<uint8_t[]>(number_of_items * size_per_item));
 
+    // TODO: adding random value as the raw plaintext
     random_device rd;
     for (uint64_t i = 0; i < number_of_items; i++) {
-        for (uint64_t j = 0; j < size_per_item; j++) {
-            auto val = rd() % 256;
+        for (uint64_t j = 0; j < size_per_item; j++) {  // TODO: size_per_items 是一个item的大小，作者将item表示成uint8的数组。
+            auto val = rd() % 256; // TODO: uint8的最大值---256
+            // TODO:这里填入的数最大只有256。超过256可能要填入vector<uint8>中
             db.get()[(i * size_per_item) + j] = val;
             db_copy.get()[(i * size_per_item) + j] = val;
         }
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
     auto time_pre_us = duration_cast<microseconds>(time_pre_e - time_pre_s).count();
 
     // Choose an index of an element in the DB
-    uint64_t ele_index = rd() % number_of_items; // element in DB at random position
+    uint64_t ele_index = 4018; // element in DB at random position
     uint64_t index = client.get_fv_index(ele_index, size_per_item);   // index of FV plaintext
     uint64_t offset = client.get_fv_offset(ele_index, size_per_item); // offset in FV plaintext
     cout << "Main: element index = " << ele_index << " from [0, " << number_of_items -1 << "]" << endl;
