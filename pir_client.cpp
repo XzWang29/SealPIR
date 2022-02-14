@@ -31,7 +31,7 @@ PirQuery PIRClient::generate_query(uint64_t desiredIndex) {
 
     Plaintext pt(params_.poly_modulus_degree());
     for (uint32_t i = 0; i < indices_.size(); i++) {
-        uint32_t num_ptxts = ceil( (pir_params_.nvec[i] + 0.0) / N);
+        uint32_t num_ptxts = ceil( (pir_params_.nvec[i] + 0.0) / N); // TODO: Q:不理解这个num_ptxts是什么意思？是否指query中密文向量中元素的个数？为什么这样算？
         // initialize result. 
         cout << "Client: index " << i + 1  <<  "/ " <<  indices_.size() << " = " << indices_[i] << endl; 
         cout << "Client: number of ctxts needed for query = " << num_ptxts << endl;

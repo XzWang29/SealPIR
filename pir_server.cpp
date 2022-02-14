@@ -182,7 +182,7 @@ PirReply PIRServer::generate_reply(PirQuery query, uint32_t client_id) {
             cout << " size mismatch!!! " << expanded_query.size() << ", " << n_i << endl; 
         }    
 
-        /*
+#ifdef DEBUG
         cout << "Checking expanded query " << endl; 
         Plaintext tempPt; 
         for (int h = 0 ; h < expanded_query.size(); h++){
@@ -191,7 +191,7 @@ PirReply PIRServer::generate_reply(PirQuery query, uint32_t client_id) {
             cout << tempPt.to_string()  << endl; 
         }
         cout << endl;
-        */
+#endif
 
         // Transform expanded query to NTT, and ...
         for (uint32_t jj = 0; jj < expanded_query.size(); jj++) {
@@ -265,6 +265,8 @@ PirReply PIRServer::generate_reply(PirQuery query, uint32_t client_id) {
     return fail;
 }
 
+
+// TODO: starting from here.
 inline vector<Ciphertext> PIRServer::expand_query(const Ciphertext &encrypted, uint32_t m,
                                            uint32_t client_id) {
 
